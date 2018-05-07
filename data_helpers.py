@@ -37,10 +37,10 @@ def load_data_and_four_labels(c1, c2, c3, c4):
     x_text = c1 + c2 + c3 + c4
     x_text = [clean_str(sent) for sent in x_text]
 
-    c1 = [[0,0,1] for _ in c1]
-    c2 = [[0,1,0] for _ in c2]
-    c3 = [[1,0,0] for _ in c3]
-    c4 = [[1,0,1] for _ in c4]
+    c1 = [[0,0,0,1] for _ in c1]
+    c2 = [[0,0,1,0] for _ in c2]
+    c3 = [[0,1,0,0] for _ in c3]
+    c4 = [[1,0,0,0] for _ in c4]
 
     y = np.concatenate([c1,c2,c3,c4], 0)
     return [x_text, y]
