@@ -1,0 +1,7 @@
+https://www.kaggle.com/uciml/news-aggregator-dataset
+
+category:
+b, business
+t, science and technology
+e, entertainment
+m, health
