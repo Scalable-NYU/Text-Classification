@@ -1,5 +1,11 @@
 #! /usr/bin/env python
 
+# Install tensorflow and required packages
+# Deploy this script on the cloud
+# Prepare the checkpoint
+# Prepare the vocab
+
+import re
 import tensorflow as tf
 import numpy as np
 import os
@@ -10,47 +16,45 @@ from text_cnn import TextCNN
 from tensorflow.contrib import learn
 import csv
 
-# Parameters
-# ==================================================
+input_data_file = './data/four_class/class_two.test'
 
-# Data Parameters
-tf.flags.DEFINE_string("c1", "./data/four_class/class_one.test", "Data source for the c1 data.")
-tf.flags.DEFINE_string("c2", "./data/four_class/class_two.test", "Data source for the c2 data.")
-tf.flags.DEFINE_string("c3", "./data/four_class/class_thr.test", "Data source for the c3 data.")
-tf.flags.DEFINE_string("c4", "./data/four_class/class_fou.test", "Data source for the c4 data.")
+def clean_str(string):
+    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
+    string = re.sub(r"\'s", " \'s", string)
+    string = re.sub(r"\'ve", " \'ve", string)
+    string = re.sub(r"n\'t", " n\'t", string)
+    string = re.sub(r"\'re", " \'re", string)
+    string = re.sub(r"\'d", " \'d", string)
+    string = re.sub(r"\'ll", " \'ll", string)
+    string = re.sub(r",", " , ", string)
+    string = re.sub(r"!", " ! ", string)
+    string = re.sub(r"\(", " \( ", string)
+    string = re.sub(r"\)", " \) ", string)
+    string = re.sub(r"\?", " \? ", string)
+    string = re.sub(r"\s{2,}", " ", string)
+    return string.strip().lower()
 
-# Eval Parameters
+def load_unlabeled_data(input_text_file):
+    input_x = list(open(input_text_file, 'r').readlines())
+    input_x = [s.strip() for s in input_x]
+    input_x = [clean_str(s) for s in input_x]
+    return input_x
+
+
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
 tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
-
-# Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
-
-
 FLAGS = tf.flags.FLAGS
-# FLAGS._parse_flags()
-# print("\nParameters:")
-# for attr, value in sorted(FLAGS.__flags.items()):
-#     print("{}={}".format(attr.upper(), value))
-# print("")
 
-# CHANGE THIS: Load data. Load your own data here
-if FLAGS.eval_train:
-    # x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
-    x_raw, y_test = data_helpers.load_data_and_four_labels(FLAGS.c1, FLAGS.c2, FLAGS.c3, FLAGS.c4)
-    y_test = np.argmax(y_test, axis=1)
-else:
-    x_raw = ["a masterpiece four years in the making", "everything is off."]
-    y_test = [1, 0]
+
+x_raw = load_unlabeled_data(input_data_file)
 
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
 x_test = np.array(list(vocab_processor.transform(x_raw)))
-
-print("\nEvaluating...\n")
 
 # Evaluation
 # ==================================================
@@ -84,15 +88,4 @@ with graph.as_default():
             batch_predictions = sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
             all_predictions = np.concatenate([all_predictions, batch_predictions])
 
-# Print accuracy if y_test is defined
-if y_test is not None:
-    correct_predictions = float(sum(all_predictions == y_test))
-    print("Total number of test examples: {}".format(len(y_test)))
-    print("Accuracy: {:g}".format(correct_predictions/float(len(y_test))))
-
-# Save the evaluation to a csv
-predictions_human_readable = np.column_stack((np.array(x_raw), all_predictions))
-out_path = os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv")
-print("Saving evaluation to {0}".format(out_path))
-with open(out_path, 'w') as f:
-    csv.writer(f).writerows(predictions_human_readable)
+print(all_predictions)
