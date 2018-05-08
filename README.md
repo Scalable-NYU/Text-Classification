@@ -15,6 +15,9 @@ python train.py
 
 Set input_data_file inside eval_server.py
 
+Download the most recent trained model from:  
+https://drive.google.com/open?id=1RF9yPJF_6WyPM1uiFAQxswaUobONHXq3
+
 ```bash
 python eval.py --eval_train --checkpoint_dir="./runs/1525708583/checkpoints/"
 
