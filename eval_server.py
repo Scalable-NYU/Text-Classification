@@ -16,7 +16,7 @@ from text_cnn import TextCNN
 from tensorflow.contrib import learn
 import csv
 
-input_data_file = './data/four_class/class_two.test'
+# input_data_file = './data/four_class/class_two.test'
 
 def clean_str(string):
     string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
@@ -40,16 +40,18 @@ def load_unlabeled_data(input_text_file):
     input_x = [clean_str(s) for s in input_x]
     return input_x
 
-
-tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
+# Input from the command line
 tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
-tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
+tf.flags.DEFINE_string("input_data_file", "", "path to the input unlabeled text file")
+
+# Optional stuff
+tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 FLAGS = tf.flags.FLAGS
 
 
-x_raw = load_unlabeled_data(input_data_file)
+x_raw = load_unlabeled_data(FLAGS.input_data_file)
 
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
@@ -88,4 +90,12 @@ with graph.as_default():
             batch_predictions = sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
             all_predictions = np.concatenate([all_predictions, batch_predictions])
 
-print(all_predictions)
+for predicted_label in all_predictions:
+	print(predicted_label)
+
+predictions_human_readable = np.column_stack((np.array(x_raw), all_predictions))
+out_path = os.path.join(FLAGS.checkpoint_dir, "..", "text_and_predicted_result.csv")
+print("Saving evaluation to {0}".format(out_path))
+
+with open(out_path, 'w') as f:
+    csv.writer(f).writerows(predictions_human_readable)
