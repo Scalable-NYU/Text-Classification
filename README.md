@@ -28,3 +28,4 @@ python eval_server.py --checkpoint_dir="./runs/1525708583/checkpoints/" --input_
 ## Reference:
 - https://github.com/dennybritz/cnn-text-classification-tf
 - https://arxiv.org/abs/1408.5882
+- Wiki: List of Datasets: https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research

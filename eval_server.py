@@ -9,14 +9,11 @@ import re
 import tensorflow as tf
 import numpy as np
 import os
-import time
-import datetime
 import data_helpers
-from text_cnn import TextCNN
 from tensorflow.contrib import learn
 import csv
 
-# input_data_file = './data/four_class/class_two.test'
+# input_data_file = './data/four_class/class_two.test' # the command line prompt will ask for input_data_file
 
 def clean_str(string):
     string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
@@ -86,12 +83,14 @@ with graph.as_default():
         # Collect the predictions here
         all_predictions = []
 
-        for x_test_batch in batches:
-            batch_predictions = sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
-            all_predictions = np.concatenate([all_predictions, batch_predictions])
+        # for x_test_batch in batches:
+        #     batch_predictions = sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
+        #     all_predictions = np.concatenate([all_predictions, batch_predictions])
 
-for predicted_label in all_predictions:
-	print(predicted_label)
+        all_predictions = sess.run(predictions, {input_x: x_test, dropout_keep_prob: 1.0})
+
+# for predicted_label in all_predictions:
+# 	print(predicted_label)
 
 predictions_human_readable = np.column_stack((np.array(x_raw), all_predictions))
 out_path = os.path.join(FLAGS.checkpoint_dir, "..", "text_and_predicted_result.csv")
