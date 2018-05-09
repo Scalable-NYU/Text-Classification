@@ -38,7 +38,7 @@ def load_unlabeled_data(input_text_file):
     return input_x
 
 # Input from the command line
-tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
+tf.flags.DEFINE_string("checkpoint_dir", "./runs/1525708583/checkpoints/", "Checkpoint directory from training run")
 tf.flags.DEFINE_string("input_data_file", "", "path to the input unlabeled text file")
 
 # Optional stuff
@@ -46,7 +46,6 @@ tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 FLAGS = tf.flags.FLAGS
-
 
 x_raw = load_unlabeled_data(FLAGS.input_data_file)
 
@@ -56,8 +55,10 @@ vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
 x_test = np.array(list(vocab_processor.transform(x_raw)))
 
 # Evaluation
-# ==================================================
-checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
+# ================================================== '/home/lizichen/lc3397@nyu.edu/CloudComp_18Sp/Text-Classification/runs/1525708583/checkpoints/model-13900'
+# checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir) # "./runs/1525708583/checkpoints/"
+checkpoint_file = './runs/1525708583/checkpoints/model-13900'
+
 graph = tf.Graph()
 with graph.as_default():
     session_conf = tf.ConfigProto(
@@ -98,3 +99,4 @@ print("Saving evaluation to {0}".format(out_path))
 
 with open(out_path, 'w') as f:
     csv.writer(f).writerows(predictions_human_readable)
+    print("Successfully Write the Result File.")

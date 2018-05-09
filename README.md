@@ -29,3 +29,7 @@ python eval_server.py --checkpoint_dir="./runs/1525708583/checkpoints/" --input_
 - https://github.com/dennybritz/cnn-text-classification-tf
 - https://arxiv.org/abs/1408.5882
 - Wiki: List of Datasets: https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research
+
+## Further Work:
+- Create REST API for TensorFlow models - https://becominghuman.ai/creating-restful-api-to-tensorflow-models-c5c57b692c10
+- Try out TensorFlow Serving: https://www.tensorflow.org/serving/
